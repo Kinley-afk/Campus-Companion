@@ -6,11 +6,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.campuscompanion.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.example.campuscompanion.MainActivity
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
+
+    private fun goToMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish() // remove LoginActivity from the back stack, so back button doesn't return to it
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +49,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 binding.progressBar.visibility = android.view.View.GONE
                 if (task.isSuccessful) {
-                    // TODO: navigate to MainActivity (home screen) — we'll add this in Step 4
-                    Toast.makeText(this, "Signed in successfully", Toast.LENGTH_SHORT).show()
+                    goToMain()
                 } else {
                     Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
@@ -53,9 +58,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // If already logged in, skip login screen
         if (auth.currentUser != null) {
-            // TODO: navigate to MainActivity — Step 4
+            goToMain()
         }
     }
 }

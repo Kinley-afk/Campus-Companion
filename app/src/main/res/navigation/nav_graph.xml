@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.campuscompanion.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/timetableFragment"
+        android:name="com.example.campuscompanion.timetable.TimetableFragment"
+        android:label="Timetable"
+        tools:layout="@layout/fragment_timetable" />
+
+    <fragment
+        android:id="@+id/tasksFragment"
+        android:name="com.example.campuscompanion.tasks.TasksFragment"
+        android:label="Tasks"
+        tools:layout="@layout/fragment_tasks" />
+
+    <fragment
+        android:id="@+id/campusMapFragment"
+        android:name="com.example.campuscompanion.campusmap.CampusMapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_campus_map" />
+
+    <fragment
+        android:id="@+id/eventsFragment"
+        android:name="com.example.campuscompanion.events.EventsFragment"
+        android:label="Events"
+        tools:layout="@layout/fragment_events" />
+
+</navigation>
