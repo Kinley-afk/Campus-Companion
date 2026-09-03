@@ -1,5 +1,6 @@
 package com.example.campuscompanion.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.campuscompanion.R
 import com.example.campuscompanion.databinding.FragmentHomeBinding
+import com.example.campuscompanion.emergency.EmergencyActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -81,6 +83,9 @@ class HomeFragment : Fragment() {
         }
         binding.tvViewAllEvents.setOnClickListener {
             findNavController().navigate(R.id.eventsFragment)
+        }
+        binding.btnEmergency.setOnClickListener {
+            startActivity(Intent(requireContext(), EmergencyActivity::class.java))
         }
     }
 
