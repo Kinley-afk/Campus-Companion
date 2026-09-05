@@ -42,16 +42,18 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/btnEmergency"
+            <TextView
+                android:id="@+id/btnProfile"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_circle_red"
-                android:src="@android:drawable/ic_dialog_alert"
-                android:contentDescription="Emergency" />
+                android:background="@drawable/bg_logo_badge"
+                android:gravity="center"
+                android:text="🎓"
+                android:textSize="22sp"
+                android:clickable="true"
+                android:focusable="true" />
 
         </LinearLayout>
-
         <!-- Status banner -->
         <TextView
             android:id="@+id/tvStatusBanner"

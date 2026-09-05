@@ -1,14 +1,17 @@
 package com.example.campuscompanion.home
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.campuscompanion.R
+import com.example.campuscompanion.auth.LoginActivity
 import com.example.campuscompanion.databinding.FragmentHomeBinding
 import com.example.campuscompanion.emergency.EmergencyActivity
 import com.example.campuscompanion.events.EventAdapter
@@ -54,8 +57,6 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh previews every time Home becomes visible again,
-        // so newly added assignments/events/classes show up immediately
         loadAssignmentsPreview()
         loadEventsPreview()
     }
@@ -85,12 +86,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupPreviewLists() {
-        // Preview lists reuse the same adapters as the real screens,
-        // but with showDelete = false since these are read-only previews
         assignmentAdapter = AssignmentAdapter(
             items = mutableListOf(),
             showDelete = false,
-            onCheckedChange = { _, _ -> } // no-op on Home; edit from Tasks tab instead
+            onCheckedChange = { _, _ -> }
         )
         binding.rvAssignmentsPreview.layoutManager = LinearLayoutManager(requireContext())
         binding.rvAssignmentsPreview.adapter = assignmentAdapter
@@ -148,9 +147,43 @@ class HomeFragment : Fragment() {
         binding.tvViewAllEvents.setOnClickListener {
             findNavController().navigate(R.id.eventsFragment)
         }
-        binding.btnEmergency.setOnClickListener {
-            startActivity(Intent(requireContext(), EmergencyActivity::class.java))
+        binding.btnProfile.setOnClickListener { view ->
+            showProfileMenu(view)
         }
+    }
+
+    private fun showProfileMenu(anchor: View) {
+        val popup = PopupMenu(requireContext(), anchor)
+        popup.menuInflater.inflate(R.menu.home_profile_menu, popup.menu)
+
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menuEmergency -> {
+                    startActivity(Intent(requireContext(), EmergencyActivity::class.java))
+                    true
+                }
+                R.id.menuLogout -> {
+                    showLogoutConfirmation()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
+    private fun showLogoutConfirmation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Log out?")
+            .setMessage("You'll need to sign in again to access your data.")
+            .setPositiveButton("Log out") { _, _ ->
+                auth.signOut()
+                val intent = Intent(requireContext(), LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {
