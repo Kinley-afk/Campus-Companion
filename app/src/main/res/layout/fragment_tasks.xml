@@ -20,8 +20,9 @@
         android:id="@+id/btnAdd"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="@drawable/bg_circle_orange"
+        android:background="@drawable/bg_circle_add"
         android:src="@android:drawable/ic_input_add"
+        android:tint="@android:color/white"
         android:contentDescription="Add assignment"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

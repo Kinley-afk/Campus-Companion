@@ -2,13 +2,16 @@ package com.example.campuscompanion.tasks
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.campuscompanion.databinding.ItemAssignmentBinding
 
 class AssignmentAdapter(
     private val items: MutableList<AssignmentItem>,
-    private val onCheckedChange: (AssignmentItem, Boolean) -> Unit
+    private val showDelete: Boolean = true,
+    private val onCheckedChange: (AssignmentItem, Boolean) -> Unit,
+    private val onDeleteClick: (AssignmentItem) -> Unit = {}
 ) : RecyclerView.Adapter<AssignmentAdapter.AssignmentViewHolder>() {
 
     inner class AssignmentViewHolder(val binding: ItemAssignmentBinding) :
@@ -28,7 +31,6 @@ class AssignmentAdapter(
         holder.binding.tvCourse.text = item.courseName
         holder.binding.tvDueDate.text = item.dueDate
 
-        // Reset listener before setting checked state, to avoid firing during recycling
         holder.binding.cbDone.setOnCheckedChangeListener(null)
         holder.binding.cbDone.isChecked = (item.status == "done")
 
@@ -49,6 +51,11 @@ class AssignmentAdapter(
 
         holder.binding.cbDone.setOnCheckedChangeListener { _, isChecked ->
             onCheckedChange(item, isChecked)
+        }
+
+        holder.binding.btnDelete.visibility = if (showDelete) View.VISIBLE else View.GONE
+        holder.binding.btnDelete.setOnClickListener {
+            onDeleteClick(item)
         }
     }
 

@@ -7,9 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.campuscompanion.R
 import com.example.campuscompanion.databinding.FragmentHomeBinding
 import com.example.campuscompanion.emergency.EmergencyActivity
+import com.example.campuscompanion.events.EventAdapter
+import com.example.campuscompanion.events.EventItem
+import com.example.campuscompanion.tasks.AssignmentAdapter
+import com.example.campuscompanion.tasks.AssignmentItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -23,6 +28,9 @@ class HomeFragment : Fragment() {
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
+
+    private lateinit var assignmentAdapter: AssignmentAdapter
+    private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +47,17 @@ class HomeFragment : Fragment() {
         setDate()
         loadUserName()
         setupNavigation()
+        setupPreviewLists()
+        loadAssignmentsPreview()
+        loadEventsPreview()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh previews every time Home becomes visible again,
+        // so newly added assignments/events/classes show up immediately
+        loadAssignmentsPreview()
+        loadEventsPreview()
     }
 
     private fun setDate() {
@@ -62,6 +81,51 @@ class HomeFragment : Fragment() {
             }
             .addOnFailureListener {
                 binding.tvGreeting.text = "Hey there 👋"
+            }
+    }
+
+    private fun setupPreviewLists() {
+        // Preview lists reuse the same adapters as the real screens,
+        // but with showDelete = false since these are read-only previews
+        assignmentAdapter = AssignmentAdapter(
+            items = mutableListOf(),
+            showDelete = false,
+            onCheckedChange = { _, _ -> } // no-op on Home; edit from Tasks tab instead
+        )
+        binding.rvAssignmentsPreview.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvAssignmentsPreview.adapter = assignmentAdapter
+
+        eventAdapter = EventAdapter(mutableListOf())
+        binding.rvEventsPreview.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvEventsPreview.adapter = eventAdapter
+    }
+
+    private fun loadAssignmentsPreview() {
+        val uid = auth.currentUser?.uid ?: return
+
+        firestore.collection("assignments")
+            .whereEqualTo("ownerId", uid)
+            .get()
+            .addOnSuccessListener { result ->
+                val items = result.documents.mapNotNull { doc ->
+                    doc.toObject(AssignmentItem::class.java)?.apply { id = doc.id }
+                }
+                    .filter { it.status != "done" }
+                    .take(3)
+
+                assignmentAdapter.updateData(items)
+            }
+    }
+
+    private fun loadEventsPreview() {
+        firestore.collection("events")
+            .get()
+            .addOnSuccessListener { result ->
+                val items = result.documents.mapNotNull { doc ->
+                    doc.toObject(EventItem::class.java)?.apply { id = doc.id }
+                }.take(3)
+
+                eventAdapter.updateData(items)
             }
     }
 

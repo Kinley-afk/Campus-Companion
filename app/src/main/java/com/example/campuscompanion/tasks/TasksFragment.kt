@@ -23,7 +23,6 @@ class TasksFragment : Fragment() {
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    // value = what's stored in Firestore, label = what's shown on the pill
     private val filters = listOf(
         "all" to "All",
         "todo" to "To do",
@@ -58,9 +57,16 @@ class TasksFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = AssignmentAdapter(mutableListOf()) { item, isChecked ->
-            updateStatus(item, if (isChecked) "done" else "todo")
-        }
+        adapter = AssignmentAdapter(
+            items = mutableListOf(),
+            showDelete = true,
+            onCheckedChange = { item, isChecked ->
+                updateStatus(item, if (isChecked) "done" else "todo")
+            },
+            onDeleteClick = { item ->
+                deleteAssignment(item)
+            }
+        )
         binding.rvAssignments.layoutManager = LinearLayoutManager(requireContext())
         binding.rvAssignments.adapter = adapter
     }
@@ -133,6 +139,17 @@ class TasksFragment : Fragment() {
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Failed to update", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun deleteAssignment(item: AssignmentItem) {
+        firestore.collection("assignments").document(item.id)
+            .delete()
+            .addOnSuccessListener {
+                loadAssignments()
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Failed to delete", Toast.LENGTH_SHORT).show()
             }
     }
 
