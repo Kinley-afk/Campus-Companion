@@ -5,5 +5,7 @@ data class LocationItem(
     val name: String = "",
     val category: String = "",
     val hours: String = "",
-    val icon: String = "📍"
+    val icon: String = "📍",
+    val lat: Double = 0.0,
+    val lng: Double = 0.0
 )

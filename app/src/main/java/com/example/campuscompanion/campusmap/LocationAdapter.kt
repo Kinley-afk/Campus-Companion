@@ -33,9 +33,4 @@ class LocationAdapter(
         items.addAll(newItems)
         notifyDataSetChanged()
     }
-
-    fun filter(query: String) {
-        // Simple client-side search — good enough for a small dataset
-        // (we'll actually call this from the fragment with the full list, see below)
-    }
 }
